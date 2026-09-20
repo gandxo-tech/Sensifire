@@ -1,0 +1,10 @@
+{
+  "name": "Générateur Sensibilité Free Fire",
+  "short_name": "SensiLab FF",
+  "description": "Générateur de sensibilités Free Fire personnalisées selon l'appareil et le profil du joueur.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090c10",
+  "theme_color": "#090c10",
+  "lang": "fr"
+}

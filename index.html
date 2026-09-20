@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sensibilité Free Fire par Téléphone | Générateur &amp; Affinage</title>
+    <meta
+      name="description"
+      content="Générateur de sensibilité Free Fire par téléphone. Calcule et affine tes sensibilités personnalisées selon ton écran et ton profil de jeu."
+    />
+    <meta name="theme-color" content="#0a0d12" />
+
+    <!-- Balises OpenGraph pour le partage social -->
+    <meta property="og:title" content="Sensibilité Free Fire par Téléphone | Générateur &amp; Affinage" />
+    <meta
+      property="og:description"
+      content="Estime et affine tes sensibilités Free Fire optimisées pour ton smartphone et ton profil."
+    />
+    <meta property="og:type" content="website" />
+
+    <!-- Manifeste Web App PWA -->
+    <link rel="manifest" href="./manifest.json" />
+
+    <!-- Feuille de style unique locale -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Annonces dynamiques pour les technologies d'assistance -->
+    <div id="aria-status" aria-live="polite" class="sr-only"></div>
+
+    <!-- Notification visuelle accessible -->
+    <div id="app-toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div class="app-container">
+      <!-- En-tête de l'application -->
+      <header class="app-header">
+        <div class="header-brand">
+          <span class="brand-badge">SensiLab</span>
+          <h1 class="brand-title">Sensibilité Free Fire</h1>
+        </div>
+        <p class="brand-subtitle">
+          Générateur de sensibilité par téléphone, calculée selon ton écran et ton profil
+        </p>
+
+        <!-- Barre de progression des 4 étapes -->
+        <nav class="stepper-nav" aria-label="Progression du générateur">
+          <div class="progress-track" aria-hidden="true">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <ol class="stepper-list">
+            <li id="step-1" class="stepper-item active" aria-current="step">
+              <span class="step-num">1</span>
+              <span class="step-text">Appareil</span>
+            </li>
+            <li id="step-2" class="stepper-item">
+              <span class="step-num">2</span>
+              <span class="step-text">Profil</span>
+            </li>
+            <li id="step-3" class="stepper-item">
+              <span class="step-num">3</span>
+              <span class="step-text">Résultat</span>
+            </li>
+            <li id="step-4" class="stepper-item">
+              <span class="step-num">4</span>
+              <span class="step-text">Affinage</span>
+            </li>
+          </ol>
+        </nav>
+      </header>
+
+      <!-- Contenu principal -->
+      <main id="main-content" class="app-main">
+        <!-- Bandeau de restauration si une sauvegarde locale existe -->
+        <section id="restore-banner" class="restore-banner hidden" aria-label="Restauration des données">
+          <div class="restore-content">
+            <span class="restore-icon" aria-hidden="true">⚙️</span>
+            <div>
+              <p class="restore-title">Réglages précédents détectés</p>
+              <p class="restore-desc">Retrouve ta configuration sauvegardée en un clic.</p>
+            </div>
+          </div>
+          <button id="btn-restore" type="button" class="btn btn-sm btn-cyan">
+            Retrouver mes réglages
+          </button>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ÉCRAN 1 : APPAREIL ET CARACTÉRISTIQUES     -->
+        <!-- ========================================== -->
+        <section id="screen-1" class="screen-panel" aria-labelledby="screen-1-title">
+          <div class="screen-header">
+            <h2 id="screen-1-title" class="screen-title">1. Sélectionne ou renseigne ton téléphone</h2>
+            <p class="screen-desc">
+              Recherche ton modèle ou mesure automatiquement les spécifications de ton écran.
+            </p>
+          </div>
+
+          <!-- Message d'erreur de chargement devices.json -->
+          <div id="devices-load-error" class="alert-box alert-warning hidden" role="alert"></div>
+
+          <!-- Recherche avec autocomplétion -->
+          <div class="form-group autocomplete-group">
+            <label for="device-search-input" class="form-label">
+              Modèle de smartphone
+              <span class="label-hint">(ex. Tecno Spark, Infinix Hot, Redmi Note, Galaxy A...)</span>
+            </label>
+            <div class="autocomplete-wrapper">
+              <input
+                type="text"
+                id="device-search-input"
+                class="form-input"
+                placeholder="Tape le nom de ton modèle..."
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="device-listbox"
+              />
+              <ul id="device-listbox" class="autocomplete-listbox hidden" role="listbox" aria-label="Suggestions d'appareils"></ul>
+            </div>
+            <div id="device-no-result" class="alert-box alert-info hidden"></div>
+            <div id="selected-model-badge" class="model-badge hidden"></div>
+          </div>
+
+          <!-- Détection automatique de l'écran actuel -->
+          <div class="detection-box">
+            <div class="detection-intro">
+              <span class="detection-title">Tu utilises cet appareil en ce moment ?</span>
+              <span class="detection-sub">Détecte instantanément la résolution et le taux de rafraîchissement.</span>
+            </div>
+            <button id="btn-detect-screen" type="button" class="btn btn-secondary btn-detect">
+              Détecter les caractéristiques de mon écran
+            </button>
+            <div id="detect-feedback-msg" class="detect-feedback" aria-live="polite"></div>
+          </div>
+
+          <!-- Caractéristiques d'affichage (modifiables) -->
+          <fieldset class="form-fieldset">
+            <legend class="fieldset-legend">Caractéristiques de l'écran</legend>
+
+            <div class="grid-form-2">
+              <div class="form-group">
+                <label for="input-diag" class="form-label">Diagonale (pouces) *</label>
+                <input
+                  type="number"
+                  id="input-diag"
+                  class="form-input"
+                  min="4.0"
+                  max="8.0"
+                  step="0.01"
+                  value="6.5"
+                  required
+                  aria-describedby="err-diag"
+                />
+                <span id="err-diag" class="form-error" role="alert" aria-live="polite"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="input-ppi" class="form-label">Densité de pixels (PPI) *</label>
+                <input
+                  type="number"
+                  id="input-ppi"
+                  class="form-input"
+                  min="150"
+                  max="800"
+                  step="1"
+                  value="405"
+                  required
+                  aria-describedby="err-ppi"
+                />
+                <span id="err-ppi" class="form-error" role="alert" aria-live="polite"></span>
+              </div>
+            </div>
+
+            <div class="grid-form-2">
+              <div class="form-group">
+                <label for="input-hz" class="form-label">Taux de rafraîchissement (Hz)</label>
+                <input
+                  type="number"
+                  id="input-hz"
+                  class="form-input"
+                  min="60"
+                  max="165"
+                  step="1"
+                  value="90"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="select-touch" class="form-label">Échantillonnage tactile</label>
+                <select id="select-touch" class="form-select">
+                  <option value="Je ne sais pas">Je ne sais pas (Standard 180 Hz)</option>
+                  <option value="Moins de 120 Hz">Moins de 120 Hz (Écran basique)</option>
+                  <option value="120 à 240 Hz" selected>120 à 240 Hz (Standard / Milieu de gamme)</option>
+                  <option value="240 Hz ou plus">240 Hz ou plus (Écran gaming / Haute réactivité)</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="nav-actions single-action">
+            <button id="btn-step1-next" type="button" class="btn btn-primary btn-large">
+              Continuer vers le profil &rarr;
+            </button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ÉCRAN 2 : PROFIL DE JEU                    -->
+        <!-- ========================================== -->
+        <section id="screen-2" class="screen-panel hidden" aria-labelledby="screen-2-title" aria-hidden="true">
+          <div class="screen-header">
+            <h2 id="screen-2-title" class="screen-title">2. Choisis ton profil de jeu</h2>
+            <p class="screen-desc">
+              Adapte les calculs à ton ergonomie de tir et à tes préférences de fluidité.
+            </p>
+          </div>
+
+          <!-- Sélection Doigts -->
+          <div class="profile-block">
+            <span class="block-label">Nombre de doigts</span>
+            <div class="button-toggle-group" role="group" aria-label="Nombre de doigts">
+              <button
+                type="button"
+                class="btn-toggle active"
+                data-group="doigts"
+                data-value="2"
+                aria-pressed="true"
+              >
+                2 doigts
+              </button>
+              <button
+                type="button"
+                class="btn-toggle"
+                data-group="doigts"
+                data-value="3"
+                aria-pressed="false"
+              >
+                3 doigts
+              </button>
+              <button
+                type="button"
+                class="btn-toggle"
+                data-group="doigts"
+                data-value="4"
+                aria-pressed="false"
+              >
+                4 doigts
+              </button>
+            </div>
+          </div>
+
+          <!-- Sélection Style de jeu -->
+          <div class="profile-block">
+            <span class="block-label">Style de jeu</span>
+            <div class="button-toggle-group" role="group" aria-label="Style de jeu">
+              <button
+                type="button"
+                class="btn-toggle"
+                data-group="style"
+                data-value="Rush"
+                aria-pressed="false"
+              >
+                Rush
+              </button>
+              <button
+                type="button"
+                class="btn-toggle active"
+                data-group="style"
+                data-value="Polyvalent"
+                aria-pressed="true"
+              >
+                Polyvalent
+              </button>
+              <button
+                type="button"
+                class="btn-toggle"
+                data-group="style"
+                data-value="Sniper"
+                aria-pressed="false"
+              >
+                Sniper
+              </button>
+            </div>
+          </div>
+
+          <!-- Sélection FPS cible -->
+          <div class="profile-block">
+            <span class="block-label">Fluidité / FPS en jeu</span>
+            <div class="button-toggle-group" role="group" aria-label="FPS en jeu">
+              <button
+                type="button"
+                class="btn-toggle active"
+                data-group="fps"
+                data-value="60"
+                aria-pressed="true"
+              >
+                60 FPS
+              </button>
+              <button
+                type="button"
+                class="btn-toggle"
+                data-group="fps"
+                data-value="90"
+                aria-pressed="false"
+              >
+                90 FPS
+              </button>
+              <button
+                type="button"
+                class="btn-toggle"
+                data-group="fps"
+                data-value="120"
+                aria-pressed="false"
+              >
+                120 et plus
+              </button>
+            </div>
+          </div>
+
+          <!-- Bloc repliable « Affiner » -->
+          <div class="accordion-block">
+            <button
+              id="toggle-refine"
+              type="button"
+              class="accordion-trigger"
+              aria-expanded="false"
+              aria-controls="refine-content"
+            >
+              <span>Affiner</span>
+              <span class="accordion-arrow" aria-hidden="true">&dtrif;</span>
+            </button>
+            <div id="refine-content" class="accordion-content hidden">
+              <p class="accordion-help">
+                Ces ajustements physiques sont des hypothèses de correction tactile :
+              </p>
+              <div class="checkbox-group">
+                <label class="checkbox-label" for="opt-verre">
+                  <input type="checkbox" id="opt-verre" class="checkbox-input" />
+                  <span class="checkbox-text">
+                    <strong>Verre trempé</strong>
+                    <small>Compense une légère perte de glisse ou d'adhérence tactile</small>
+                  </span>
+                </label>
+                <label class="checkbox-label" for="opt-moites">
+                  <input type="checkbox" id="opt-moites" class="checkbox-input" />
+                  <span class="checkbox-text">
+                    <strong>Mains moites</strong>
+                    <small>Ajuste la sensibilité en cas de glisse excessive sur l'écran</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-actions">
+            <button id="btn-step2-prev" type="button" class="btn btn-secondary">
+              &larr; Écran précédent
+            </button>
+            <button id="btn-step2-next" type="button" class="btn btn-primary btn-large">
+              Calculer mes sensibilités &rarr;
+            </button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ÉCRAN 3 : RÉSULTATS                        -->
+        <!-- ========================================== -->
+        <section id="screen-3" class="screen-panel hidden" aria-labelledby="screen-3-title" aria-hidden="true">
+          <div class="screen-header">
+            <h2 id="screen-3-title" class="screen-title">3. Sensibilité optimisée pour ton profil</h2>
+            <p id="result-summary-text" class="result-summary">
+              Optimisé pour ton appareil, 2 doigts, style Polyvalent.
+            </p>
+            <p class="result-hint">
+              Ces valeurs sont des estimations de départ à tester et affiner en salle d'entraînement.
+            </p>
+          </div>
+
+          <!-- Cartes des 5 sensibilités -->
+          <div class="sensi-grid" role="region" aria-label="Valeurs de sensibilité calculées">
+            <!-- 1. Général -->
+            <article class="sensi-card highlight-card">
+              <div class="sensi-card-header">
+                <div>
+                  <h3 class="sensi-name">Général</h3>
+                  <p class="sensi-desc">Vision libre, déplacement et demi-tour 180°</p>
+                </div>
+                <span id="val-general" class="sensi-value">85</span>
+              </div>
+              <div class="sensi-gauge">
+                <div
+                  id="bar-general"
+                  class="sensi-gauge-fill bar-cyan"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="85"
+                  style="width: 85%"
+                ></div>
+              </div>
+            </article>
+
+            <!-- 2. Point rouge -->
+            <article class="sensi-card">
+              <div class="sensi-card-header">
+                <div>
+                  <h3 class="sensi-name">Point rouge</h3>
+                  <p class="sensi-desc">Visée réflexe directe sans grossissement</p>
+                </div>
+                <span id="val-point-rouge" class="sensi-value">81</span>
+              </div>
+              <div class="sensi-gauge">
+                <div
+                  id="bar-point-rouge"
+                  class="sensi-gauge-fill"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="81"
+                  style="width: 81%"
+                ></div>
+              </div>
+            </article>
+
+            <!-- 3. Lunette 2x -->
+            <article class="sensi-card">
+              <div class="sensi-card-header">
+                <div>
+                  <h3 class="sensi-name">Lunette 2x</h3>
+                  <p class="sensi-desc">Suivi régulier à moyenne portée</p>
+                </div>
+                <span id="val-2x" class="sensi-value">77</span>
+              </div>
+              <div class="sensi-gauge">
+                <div
+                  id="bar-2x"
+                  class="sensi-gauge-fill"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="77"
+                  style="width: 77%"
+                ></div>
+              </div>
+            </article>
+
+            <!-- 4. Lunette 4x -->
+            <article class="sensi-card">
+              <div class="sensi-card-header">
+                <div>
+                  <h3 class="sensi-name">Lunette 4x</h3>
+                  <p class="sensi-desc">Tirs de précision et suivi longue distance</p>
+                </div>
+                <span id="val-4x" class="sensi-value">72</span>
+              </div>
+              <div class="sensi-gauge">
+                <div
+                  id="bar-4x"
+                  class="sensi-gauge-fill"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="72"
+                  style="width: 72%"
+                ></div>
+              </div>
+            </article>
+
+            <!-- 5. Lunette AWM -->
+            <article class="sensi-card">
+              <div class="sensi-card-header">
+                <div>
+                  <h3 class="sensi-name">Lunette AWM</h3>
+                  <p class="sensi-desc">Micro-ajustements aux fusils de précision</p>
+                </div>
+                <span id="val-awm" class="sensi-value">64</span>
+              </div>
+              <div class="sensi-gauge">
+                <div
+                  id="bar-awm"
+                  class="sensi-gauge-fill bar-orange"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="64"
+                  style="width: 64%"
+                ></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="nav-actions">
+            <button id="btn-step3-prev" type="button" class="btn btn-secondary">
+              &larr; Modifier le profil
+            </button>
+            <button id="btn-step3-share" type="button" class="btn btn-secondary">
+              Partager la carte
+            </button>
+            <button id="btn-step3-next" type="button" class="btn btn-primary btn-large">
+              Tester et affiner en jeu &rarr;
+            </button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ÉCRAN 4 : TEST ET AFFINAGE                 -->
+        <!-- ========================================== -->
+        <section id="screen-4" class="screen-panel hidden" aria-labelledby="screen-4-title" aria-hidden="true">
+          <div class="screen-header">
+            <h2 id="screen-4-title" class="screen-title">4. Protocole de test et affinage</h2>
+            <p class="screen-desc">
+              Rends-toi en salle d'entraînement dans Free Fire pour tester chaque mouvement. Ajuste immédiatement par paliers de 4 points si nécessaire.
+            </p>
+          </div>
+
+          <div class="tuning-list">
+            <!-- Réglage 1 : Général -->
+            <div class="tuning-card">
+              <div class="tuning-info">
+                <div class="tuning-title-row">
+                  <h3 class="tuning-title">Général</h3>
+                  <span id="tune-val-general" class="tuning-val-badge">85</span>
+                </div>
+                <p class="protocol-guide">
+                  <strong>Protocole :</strong> Fais un demi-tour d'environ 180° avec un geste de pouce.
+                </p>
+                <div class="sensi-gauge">
+                  <div id="tune-bar-general" class="sensi-gauge-fill bar-cyan" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" style="width: 85%"></div>
+                </div>
+              </div>
+              <div class="tuning-btn-group" role="group" aria-label="Ajuster la sensibilité Générale">
+                <button type="button" class="btn-tune tune-slow" data-action="tune" data-target="general" data-tune-type="lent">
+                  Trop lent (+4)
+                </button>
+                <button type="button" class="btn-tune tune-ok" data-action="tune" data-target="general" data-tune-type="bon">
+                  Bon
+                </button>
+                <button type="button" class="btn-tune tune-fast" data-action="tune" data-target="general" data-tune-type="rapide">
+                  Trop rapide (-4)
+                </button>
+              </div>
+            </div>
+
+            <!-- Réglage 2 : Point rouge -->
+            <div class="tuning-card">
+              <div class="tuning-info">
+                <div class="tuning-title-row">
+                  <h3 class="tuning-title">Point rouge</h3>
+                  <span id="tune-val-pointRouge" class="tuning-val-badge">81</span>
+                </div>
+                <p class="protocol-guide">
+                  <strong>Protocole :</strong> Vise une cible fixe puis un mannequin mobile.
+                </p>
+                <div class="sensi-gauge">
+                  <div id="tune-bar-pointRouge" class="sensi-gauge-fill" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="81" style="width: 81%"></div>
+                </div>
+              </div>
+              <div class="tuning-btn-group" role="group" aria-label="Ajuster la sensibilité Point rouge">
+                <button type="button" class="btn-tune tune-slow" data-action="tune" data-target="pointRouge" data-tune-type="lent">
+                  Trop lent (+4)
+                </button>
+                <button type="button" class="btn-tune tune-ok" data-action="tune" data-target="pointRouge" data-tune-type="bon">
+                  Bon
+                </button>
+                <button type="button" class="btn-tune tune-fast" data-action="tune" data-target="pointRouge" data-tune-type="rapide">
+                  Trop rapide (-4)
+                </button>
+              </div>
+            </div>
+
+            <!-- Réglage 3 : Lunette 2x -->
+            <div class="tuning-card">
+              <div class="tuning-info">
+                <div class="tuning-title-row">
+                  <h3 class="tuning-title">Lunette 2x</h3>
+                  <span id="tune-val-lunette2x" class="tuning-val-badge">77</span>
+                </div>
+                <p class="protocol-guide">
+                  <strong>Protocole :</strong> Teste le suivi d'une cible avec la lunette 2x.
+                </p>
+                <div class="sensi-gauge">
+                  <div id="tune-bar-lunette2x" class="sensi-gauge-fill" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="77" style="width: 77%"></div>
+                </div>
+              </div>
+              <div class="tuning-btn-group" role="group" aria-label="Ajuster la sensibilité Lunette 2x">
+                <button type="button" class="btn-tune tune-slow" data-action="tune" data-target="lunette2x" data-tune-type="lent">
+                  Trop lent (+4)
+                </button>
+                <button type="button" class="btn-tune tune-ok" data-action="tune" data-target="lunette2x" data-tune-type="bon">
+                  Bon
+                </button>
+                <button type="button" class="btn-tune tune-fast" data-action="tune" data-target="lunette2x" data-tune-type="rapide">
+                  Trop rapide (-4)
+                </button>
+              </div>
+            </div>
+
+            <!-- Réglage 4 : Lunette 4x -->
+            <div class="tuning-card">
+              <div class="tuning-info">
+                <div class="tuning-title-row">
+                  <h3 class="tuning-title">Lunette 4x</h3>
+                  <span id="tune-val-lunette4x" class="tuning-val-badge">72</span>
+                </div>
+                <p class="protocol-guide">
+                  <strong>Protocole :</strong> Teste la précision et le suivi avec la lunette 4x.
+                </p>
+                <div class="sensi-gauge">
+                  <div id="tune-bar-lunette4x" class="sensi-gauge-fill" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72" style="width: 72%"></div>
+                </div>
+              </div>
+              <div class="tuning-btn-group" role="group" aria-label="Ajuster la sensibilité Lunette 4x">
+                <button type="button" class="btn-tune tune-slow" data-action="tune" data-target="lunette4x" data-tune-type="lent">
+                  Trop lent (+4)
+                </button>
+                <button type="button" class="btn-tune tune-ok" data-action="tune" data-target="lunette4x" data-tune-type="bon">
+                  Bon
+                </button>
+                <button type="button" class="btn-tune tune-fast" data-action="tune" data-target="lunette4x" data-tune-type="rapide">
+                  Trop rapide (-4)
+                </button>
+              </div>
+            </div>
+
+            <!-- Réglage 5 : Lunette AWM -->
+            <div class="tuning-card">
+              <div class="tuning-info">
+                <div class="tuning-title-row">
+                  <h3 class="tuning-title">Lunette AWM</h3>
+                  <span id="tune-val-lunetteAWM" class="tuning-val-badge">64</span>
+                </div>
+                <p class="protocol-guide">
+                  <strong>Protocole :</strong> Teste la visée et les ajustements fins avec la lunette AWM.
+                </p>
+                <div class="sensi-gauge">
+                  <div id="tune-bar-lunetteAWM" class="sensi-gauge-fill bar-orange" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="64" style="width: 64%"></div>
+                </div>
+              </div>
+              <div class="tuning-btn-group" role="group" aria-label="Ajuster la sensibilité Lunette AWM">
+                <button type="button" class="btn-tune tune-slow" data-action="tune" data-target="lunetteAWM" data-tune-type="lent">
+                  Trop lent (+4)
+                </button>
+                <button type="button" class="btn-tune tune-ok" data-action="tune" data-target="lunetteAWM" data-tune-type="bon">
+                  Bon
+                </button>
+                <button type="button" class="btn-tune tune-fast" data-action="tune" data-target="lunetteAWM" data-tune-type="rapide">
+                  Trop rapide (-4)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions de persistance et partage -->
+          <div class="final-actions-panel">
+            <button id="btn-save-settings" type="button" class="btn btn-secondary">
+              Sauvegarder mes réglages
+            </button>
+            <button id="btn-share-settings" type="button" class="btn btn-primary btn-large">
+              Partager mes réglages
+            </button>
+          </div>
+
+          <div class="nav-actions">
+            <button id="btn-step4-prev" type="button" class="btn btn-secondary">
+              &larr; Retour aux résultats
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer obligatoire -->
+      <footer class="app-footer">
+        <p class="footer-notice">
+          Site non affilié à Garena ni à Free Fire. Les valeurs sont une estimation de départ à affiner en jeu.
+        </p>
+      </footer>
+    </div>
+
+    <!-- Script racine module ES -->
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

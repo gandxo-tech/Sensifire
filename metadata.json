@@ -1,0 +1,6 @@
+{
+  "name": "Générateur Sensibilité Free Fire",
+  "description": "Générateur de sensibilités Free Fire personnalisées selon l'appareil et le profil du joueur.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
