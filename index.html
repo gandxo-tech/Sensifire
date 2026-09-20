@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Sensibilité Free Fire par Téléphone | Générateur &amp; Affinage</title>
     <meta
       name="description"
@@ -490,6 +490,32 @@
             </article>
           </div>
 
+          <!-- Carte conseil One-Tap & Bouton de tir -->
+          <div class="onetap-guide-card">
+            <div class="onetap-guide-header">
+              <span class="onetap-badge">Calibrage One-Tap</span>
+              <h3 class="onetap-title">Technique du tir relevé (Drag Headshot)</h3>
+            </div>
+            <p class="onetap-text">
+              Pour déclencher un headshot en One-Tap, le viseur doit monter de manière fluide du torse jusqu'à la tête sans dépasser la cible.
+            </p>
+            <div class="onetap-params">
+              <div class="onetap-param-box">
+                <span class="param-label">Taille recommandée du bouton de tir</span>
+                <span id="val-fire-button" class="param-value">48 %</span>
+                <span class="param-hint">Placé bas à droite pour garder un maximum d'amplitude de glisse vers le haut.</span>
+              </div>
+              <div class="onetap-param-box">
+                <span class="param-label">Règle de diagnostic en jeu</span>
+                <div class="param-status-list">
+                  <span class="status-item status-low">🟡 Balle bloquée au torse &rarr; sensibilité trop basse (+4)</span>
+                  <span class="status-item status-high">🔵 Balle au-dessus de la tête &rarr; sensibilité trop haute (-4)</span>
+                  <span class="status-item status-good">🔴 Tir rouge direct dans la tête &rarr; réglage validé !</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="nav-actions">
             <button id="btn-step3-prev" type="button" class="btn btn-secondary">
               &larr; Modifier le profil
@@ -508,9 +534,9 @@
         <!-- ========================================== -->
         <section id="screen-4" class="screen-panel hidden" aria-labelledby="screen-4-title" aria-hidden="true">
           <div class="screen-header">
-            <h2 id="screen-4-title" class="screen-title">4. Protocole de test et affinage</h2>
+            <h2 id="screen-4-title" class="screen-title">4. Protocole de test et affinage One-Tap</h2>
             <p class="screen-desc">
-              Rends-toi en salle d'entraînement dans Free Fire pour tester chaque mouvement. Ajuste immédiatement par paliers de 4 points si nécessaire.
+              Rends-toi en salle d'entraînement dans Free Fire pour tester chaque tir relevé. Ajuste immédiatement par paliers de 4 points selon le comportement de tes balles.
             </p>
           </div>
 
@@ -519,11 +545,12 @@
             <div class="tuning-card">
               <div class="tuning-info">
                 <div class="tuning-title-row">
-                  <h3 class="tuning-title">Général</h3>
+                  <h3 class="tuning-title">Général (Tir au jugé / One-Tap pompe &amp; pistolet)</h3>
                   <span id="tune-val-general" class="tuning-val-badge">85</span>
                 </div>
                 <p class="protocol-guide">
-                  <strong>Protocole :</strong> Fais un demi-tour d'environ 180° avec un geste de pouce.
+                  <strong>Protocole One-Tap :</strong> Vise au niveau du torse avec une arme One-Tap (Desert Eagle, M1887, Woodpecker) et lève vivement le bouton de tir.
+                  <span class="guide-note">Balle bloquée au torse &rarr; clique sur <em>Trop lent (+4)</em> | Balle au-dessus de la tête &rarr; clique sur <em>Trop rapide (-4)</em>.</span>
                 </p>
                 <div class="sensi-gauge">
                   <div id="tune-bar-general" class="sensi-gauge-fill bar-cyan" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" style="width: 85%"></div>
@@ -546,11 +573,12 @@
             <div class="tuning-card">
               <div class="tuning-info">
                 <div class="tuning-title-row">
-                  <h3 class="tuning-title">Point rouge</h3>
+                  <h3 class="tuning-title">Point rouge (Mire &amp; AR One-Tap)</h3>
                   <span id="tune-val-pointRouge" class="tuning-val-badge">81</span>
                 </div>
                 <p class="protocol-guide">
-                  <strong>Protocole :</strong> Vise une cible fixe puis un mannequin mobile.
+                  <strong>Protocole One-Tap mire :</strong> Teste le tir relevé à moyenne distance sans lunette sur cible fixe puis en mouvement.
+                  <span class="guide-note">Visée qui ne monte pas à la tête &rarr; clique sur <em>Trop lent (+4)</em> | Viseur qui saute trop haut &rarr; clique sur <em>Trop rapide (-4)</em>.</span>
                 </p>
                 <div class="sensi-gauge">
                   <div id="tune-bar-pointRouge" class="sensi-gauge-fill" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="81" style="width: 81%"></div>

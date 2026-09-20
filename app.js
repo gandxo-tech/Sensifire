@@ -4,7 +4,7 @@
 
 import { CONFIG } from "./config.js";
 import { obtenirResolution, calculerPPI, mesurerTauxRafraichissement } from "./detect.js";
-import { calculerSensi, verifierCasReference } from "./calc.js";
+import { calculerSensi, calculerTailleBoutonTir, verifierCasReference } from "./calc.js";
 import { sauvegarderReglages, chargerReglages } from "./storage.js";
 import { partagerReglages } from "./share.js";
 
@@ -570,6 +570,13 @@ function mettreAJourEcranResultats() {
       barEl.setAttribute("aria-valuenow", String(val));
     }
   });
+
+  // Recommandation One-Tap : Taille du bouton de tir
+  const tailleBouton = calculerTailleBoutonTir(state.appareil.diag, state.profil.doigts);
+  const btnFireEl = document.getElementById("val-fire-button");
+  if (btnFireEl) {
+    btnFireEl.textContent = `${tailleBouton} %`;
+  }
 }
 
 /**

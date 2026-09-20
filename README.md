@@ -14,6 +14,7 @@ Application web statique moderne permettant aux joueurs de **Free Fire** d'estim
 - [Modèle mathématique](#modèle-mathématique)
 - [Installation & Démarrage](#installation--démarrage)
 - [Protocole de test & Affinage](#protocole-de-test--affinage)
+- [Guide One-Tap & Headshots](#guide-one-tap--headshots-tir-relevé)
 - [Accessibilité & Ergonomie](#accessibilité--ergonomie)
 - [Confidentialité](#confidentialité)
 
@@ -162,6 +163,22 @@ Après avoir généré vos valeurs, rendez-vous dans la **salle d'entraînement*
 2. **Point rouge & Mire :** Visez un mannequin fixe puis entraînez-vous au tir réflexe sur cible mobile.
 3. **Lunettes 2x et 4x :** Entraînez-vous au suivi continu d'un joueur en mouvement à moyenne et longue distance.
 4. **Lunette AWM :** Testez la stabilité du viseur pour les micro-corrections sans à-coups.
+
+---
+
+## Guide One-Tap & Headshots (Tir Relevé)
+
+Pour réussir des **headshots en One-Tap** (notamment au *Desert Eagle*, *M1887*, *Woodpecker* ou *SVD*), deux éléments clés sont synchronisés :
+
+### 1. La mécanique du Drag Shot (Tir relevé)
+Le joueur positionne son viseur blanc près du torse ou du cou de l'adversaire, puis déclenche un geste ascendant vif avec le bouton de tir. L'aide à la visée (aim assist) s'enclenche et accompagne la mire vers la tête :
+- **Si la balle reste bloquée dans le torse (dégâts jaunes) :** La sensibilité **Générale** ou **Point rouge** est trop basse, ou la course du doigt est trop courte. Augmentez la sensibilité par palier de **+4**.
+- **Si le tir part au-dessus de la tête :** La sensibilité est trop élevée ou le geste est trop brusque. Diminuez la sensibilité par palier de **-4**.
+- **Si le tir touche la tête directement (dégâts rouges) :** Le réglage est calibré pour votre écran et votre vitesse de geste.
+
+### 2. Le dimensionnement & placement du bouton de tir
+- **Taille conseillée :** Entre **42 % et 54 %** selon la diagonale de l'écran (calculée automatiquement par SensiLab). Un bouton trop gros réduit l'espace vertical disponible pour faire monter le viseur.
+- **Positionnement :** Placez le bouton dans le **tiers inférieur droit** de l'écran afin de maximiser la zone de balayage vers le haut.
 
 ---
 

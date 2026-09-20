@@ -92,6 +92,35 @@ export function calculerSensi(appareil, profil) {
 }
 
 /**
+ * Calcule une taille recommandée pour le bouton de tir (HUD) adaptée au one-tap.
+ * Un écran plus grand ou plus de doigts permet un bouton légèrement plus grand (50-54%),
+ * tandis qu'un écran compact demande un bouton plus petit (44-48%) pour préserver
+ * l'espace vertical indispensable au geste de tir relevé (drag headshot).
+ * @param {number} diag - Diagonale de l'écran en pouces
+ * @param {number} doigts - Nombre de doigts
+ * @returns {number} Taille en pourcentage (ex. 48)
+ */
+export function calculerTailleBoutonTir(diag, doigts) {
+  const d = Number(diag) || 6.5;
+  const n = Number(doigts) || 2;
+  let taille = 48;
+
+  if (d < 6.4) {
+    taille -= 4;
+  } else if (d >= 6.7) {
+    taille += 3;
+  }
+
+  if (n === 2) {
+    taille -= 2;
+  } else if (n >= 4) {
+    taille += 2;
+  }
+
+  return Math.max(40, Math.min(58, Math.round(taille)));
+}
+
+/**
  * Vérifie le cas de référence obligatoire spécifié par le cahier des charges :
  * PPI = 400, Touch >= 240, FPS = 90, Doigts = 3, Style = Rush, aucune option.
  * La sensibilité Générale doit être strictement égale à 93.

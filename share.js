@@ -2,6 +2,8 @@
  * Module de génération de la carte graphique 1080x1080 et de partage social / téléchargement.
  */
 
+import { calculerTailleBoutonTir } from "./calc.js";
+
 /**
  * Dessine un rectangle avec coins arrondis sur un contexte Canvas.
  */
@@ -106,6 +108,7 @@ export function genererCarteImage(appareil, profil, valeurs) {
       const modeleNom = appareil?.modele || "Modèle personnalisé";
       const styleNom = profil?.style || "Polyvalent";
       const doigtsNom = profil?.doigts ? `${profil.doigts} doigts` : "Standard";
+      const tailleBouton = calculerTailleBoutonTir(appareil?.diag, profil?.doigts);
 
       ctx.fillStyle = "#94a3b8";
       ctx.font = "500 24px system-ui, -apple-system, sans-serif";
@@ -113,7 +116,7 @@ export function genererCarteImage(appareil, profil, valeurs) {
 
       ctx.fillStyle = "#cbd5e1";
       ctx.font = "600 22px system-ui, -apple-system, sans-serif";
-      ctx.fillText(`Style : ${styleNom}  •  Configuration : ${doigtsNom}`, 80, 258);
+      ctx.fillText(`Style : ${styleNom}  •  ${doigtsNom}  •  Bouton de tir : ${tailleBouton}%`, 80, 258);
 
       // Séparateur fin
       ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
@@ -125,8 +128,8 @@ export function genererCarteImage(appareil, profil, valeurs) {
 
       // 5. Les 5 rangées de réglages
       const items = [
-        { label: "Général", val: valeurs?.general ?? 0, desc: "Déplacement & rotation caméra 180°" },
-        { label: "Point rouge", val: valeurs?.pointRouge ?? 0, desc: "Visée directe sans lunette" },
+        { label: "Général", val: valeurs?.general ?? 0, desc: "Tir relevé One-Tap & rotation caméra 180°" },
+        { label: "Point rouge", val: valeurs?.pointRouge ?? 0, desc: "One-Tap sans lunette & visée directe" },
         { label: "Lunette 2x", val: valeurs?.lunette2x ?? 0, desc: "Combats moyenne portée" },
         { label: "Lunette 4x", val: valeurs?.lunette4x ?? 0, desc: "Précision longue distance" },
         { label: "Lunette AWM", val: valeurs?.lunetteAWM ?? 0, desc: "Fusils de précision / Snipers" }
@@ -190,17 +193,21 @@ export function genererCarteImage(appareil, profil, valeurs) {
       });
 
       // 6. Pied de page
-      ctx.fillStyle = "#64748b";
-      ctx.font = "400 18px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "600 18px system-ui, -apple-system, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(
-        "Générateur Sensibilité Free Fire  •  Estimation de départ à affiner en jeu",
+        "Générateur Sensibilité Free Fire  •  Calibrage One-Tap & Tir relevé",
         540,
         995
       );
       ctx.font = "400 14px system-ui, -apple-system, sans-serif";
-      ctx.fillStyle = "#475569";
-      ctx.fillText("Site non affilié à Garena ni à Free Fire", 540, 1022);
+      ctx.fillStyle = "#64748b";
+      ctx.fillText(
+        "Site non affilié à Garena ni à Free Fire. Les valeurs sont une estimation de départ à affiner en jeu.",
+        540,
+        1022
+      );
 
       canvas.toBlob((blob) => {
         if (blob) {
